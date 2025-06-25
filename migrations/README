@@ -1,0 +1,35 @@
+Single-database configuration for Flask.
+# Data Analysis Web Application
+
+A full-stack web application for uploading, analyzing, visualizing, and making predictions with data.
+
+## Features
+
+- User authentication (register/login)
+- File upload (CSV/Excel)
+- Data analysis and visualization
+- Machine learning predictions
+- PDF report generation
+- User dashboard with history
+
+## Technologies
+
+- Backend: Python (Flask)
+- Frontend: HTML, CSS, JavaScript, Bootstrap
+- Database: MySQL
+- Data Processing: pandas, numpy
+- Machine Learning: scikit-learn, xgboost
+- Visualization: matplotlib, seaborn, plotly
+- PDF Generation: xhtml2pdf # small side row 2000, c 30
+
+## Setup
+
+1. Clone the repository
+2. Create and activate a virtual environment
+3. Install dependencies: `pip install -r requirements.txt`
+4. Create a `.env` file with your database credentials (see `.env.example`)
+5. Initialize the database:
+   ```bash
+   flask shell
+   >>> db.create_all()
+   >>> exit()

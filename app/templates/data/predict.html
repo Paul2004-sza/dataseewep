@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h3>Predict Data: {{ file_id }}</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="target_column" class="form-label">Select Target Column to Predict</label>
+                        <select class="form-select" id="target_column" name="target_column" required>
+                            <option value="">-- Select a column --</option>
+                            {% for col in numeric_cols %}
+                            <option value="{{ col }}">{{ col }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Select Model</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="model_type" id="linear_regression" value="linear_regression" checked>
+                            <label class="form-check-label" for="linear_regression">
+                                Linear Regression
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="model_type" id="decision_tree" value="decision_tree">
+                            <label class="form-check-label" for="decision_tree">
+                                Decision Tree
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="model_type" id="random_forest" value="random_forest">
+                            <label class="form-check-label" for="random_forest">
+                                Random Forest
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="model_type" id="xgboost" value="xgboost">
+                            <label class="form-check-label" for="xgboost">
+                                XGBoost
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Train Model & Generate Report</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

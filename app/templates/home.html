@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h3>Welcome to Data Analysis App</h3>
+            </div>
+            <div class="card-body">
+                <p class="lead">
+                    Upload your data files (.csv or .xlsx) to perform analysis, visualization, and predictive modeling.
+                </p>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('data.upload') }}" class="btn btn-primary btn-lg">
+                        Upload New Data File
+                    </a>
+                    <a href="{{ url_for('data.dashboard') }}" class="btn btn-secondary btn-lg">
+                        View Your Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
