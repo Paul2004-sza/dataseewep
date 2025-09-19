@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* Full-screen background with dark blue overlay */
+    body, html {
+        height: 100%;
+        margin: 0;
+        background-color: #0d1b2a; /* Dark blue background behind the image */
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .landing-section {
+        position: relative;
+        background: linear-gradient(rgba(13,27,42,0.6), rgba(13,27,42,0.6)),
+                    url("{{ url_for('static', filename='images/ed.jpg') }}") no-repeat center center;
+        background-size: cover;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        text-align: center;
+        overflow: hidden;
+    }
+
+    .landing-content h1 {
+        font-size: 4rem;
+        font-weight: bold;
+        text-shadow: 2px 2px 12px rgba(0,0,0,0.8);
+        animation: fadeInDown 1s ease-in-out;
+    }
+
+    .landing-content p {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+        text-shadow: 1px 1px 8px rgba(0,0,0,0.7);
+        animation: fadeInUp 1s ease-in-out;
+    }
+
+    .btn-landing {
+        padding: 1rem 2rem;
+        font-size: 1.2rem;
+        border-radius: 50px;
+        transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+    }
+
+    .btn-landing:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    }
+
+    .btn-primary.btn-landing:hover {
+        background: #1b4f72; /* Darker hover for primary */
+    }
+
+    .btn-success.btn-landing:hover {
+        background: #196f3d; /* Darker hover for success */
+    }
+
+    .landing-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    /* Keyframes for animations */
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-50px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(50px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+
+<section class="landing-section">
+    <div class="landing-content">
+        <h1>Welcome to DataAnalyzer Pro</h1>
+        <p>Analyze, visualize, and predict your data effortlessly!</p>
+        <div class="landing-buttons">
+            <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-landing">Sign In</a>
+            <a href="{{ url_for('auth.register') }}" class="btn btn-success btn-landing">Sign Up</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

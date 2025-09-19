@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // File upload handling
+    // -------------------- Existing File Upload Handling --------------------
     const fileInput = document.getElementById('file');
     if (fileInput) {
         fileInput.addEventListener('change', function() {
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Column selection toggles
+    // -------------------- Column Selection Toggles --------------------
     const selectAllBtn = document.getElementById('select-all-columns');
     const deselectAllBtn = document.getElementById('deselect-all-columns');
     const columnCheckboxes = document.querySelectorAll('input[name="columns"]');
@@ -34,19 +34,53 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // AJAX form submission for analysis/prediction
+    // -------------------- AJAX Form Submission --------------------
     const analysisForm = document.getElementById('analysis-form');
     const predictionForm = document.getElementById('prediction-form');
 
-    if (analysisForm) {
-        setupAjaxForm(analysisForm);
+    if (analysisForm) setupAjaxForm(analysisForm);
+    if (predictionForm) setupAjaxForm(predictionForm);
+
+    // -------------------- Dashboard: Search / Filter Tables --------------------
+    function filterTable(inputId, tableId) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        input.addEventListener('keyup', function() {
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById(tableId);
+            if (!table) return;
+            const rows = table.getElementsByTagName('tr');
+            for (let i = 1; i < rows.length; i++) {
+                rows[i].style.display = rows[i].textContent.toLowerCase().includes(filter) ? '' : 'none';
+            }
+        });
+    }
+    filterTable('searchFile', 'dataFilesTableContent');
+    filterTable('searchReport', 'reportsTableContent');
+
+    // -------------------- Dashboard: Sort Table --------------------
+    function sortTable(colIndex, tableId) {
+        const table = document.getElementById(tableId);
+        if (!table) return;
+        const rows = Array.from(table.rows).slice(1);
+        const asc = table.getAttribute('data-sort-asc') === 'true';
+        rows.sort((a, b) => a.cells[colIndex].textContent.trim().localeCompare(b.cells[colIndex].textContent.trim()));
+        if (asc) rows.reverse();
+        rows.forEach(row => table.tBodies[0].appendChild(row));
+        table.setAttribute('data-sort-asc', !asc);
     }
 
-    if (predictionForm) {
-        setupAjaxForm(predictionForm);
+    // Add click events for sortable columns in Data Files table
+    const dataFilesTable = document.getElementById('dataFilesTableContent');
+    if (dataFilesTable) {
+        const headers = dataFilesTable.querySelectorAll('th');
+        headers.forEach((th, index) => {
+            th.addEventListener('click', () => sortTable(index, 'dataFilesTableContent'));
+        });
     }
 });
 
+// -------------------- AJAX Form Helper --------------------
 function setupAjaxForm(form) {
     form.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -83,6 +117,7 @@ function setupAjaxForm(form) {
     });
 }
 
+// -------------------- Error Alert Helper --------------------
 function showError(message) {
     const errorAlert = document.createElement('div');
     errorAlert.className = 'alert alert-danger alert-dismissible fade show';

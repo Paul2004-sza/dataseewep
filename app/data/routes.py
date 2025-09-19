@@ -237,3 +237,58 @@ def view_report(report_type, report_id):
                            analysis_id=report.id if template_type == 'analysis' else None,
                            prediction_id=report.id if template_type == 'prediction' else None,
                            report_data=base64.b64encode(pdf_bytes).decode('utf-8'))
+# Delete a data file and all its reports
+@data_bp.route('/delete_file/<int:file_id>', methods=['POST'])
+@login_required
+def delete_file(file_id):
+    data_file = DataFile.query.get_or_404(file_id)
+
+    if data_file.user_id != current_user.id:
+        flash("You do not have permission to delete this file", "error")
+        return redirect(url_for('data.dashboard'))
+
+    # Delete associated analyses
+    for analysis in data_file.analyses:
+        if analysis.result_path and os.path.exists(analysis.result_path):
+            os.remove(analysis.result_path)
+        db.session.delete(analysis)
+
+    # Delete associated predictions
+    for prediction in data_file.predictions:
+        if prediction.result_path and os.path.exists(prediction.result_path):
+            os.remove(prediction.result_path)
+        db.session.delete(prediction)
+
+    # Delete the file from filesystem
+    if os.path.exists(data_file.filepath):
+        os.remove(data_file.filepath)
+
+    db.session.delete(data_file)
+    db.session.commit()
+    flash("File and associated reports deleted successfully", "success")
+    return redirect(url_for('data.dashboard'))
+
+
+# Delete a single report
+@data_bp.route('/delete_report/<report_type>/<int:report_id>', methods=['POST'])
+@login_required
+def delete_report(report_type, report_id):
+    if report_type == 'analysis':
+        report = Analysis.query.get_or_404(report_id)
+    elif report_type == 'prediction':
+        report = Prediction.query.get_or_404(report_id)
+    else:
+        flash("Invalid report type", "error")
+        return redirect(url_for('data.dashboard'))
+
+    if report.data_file.user_id != current_user.id:
+        flash("You do not have permission to delete this report", "error")
+        return redirect(url_for('data.dashboard'))
+
+    if report.result_path and os.path.exists(report.result_path):
+        os.remove(report.result_path)
+
+    db.session.delete(report)
+    db.session.commit()
+    flash("Report deleted successfully", "success")
+    return redirect(url_for('data.dashboard'))

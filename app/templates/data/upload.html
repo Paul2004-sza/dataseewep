@@ -1,23 +1,87 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-8 offset-md-2">
-        <div class="card">
-            <div class="card-header">
-                <h3>Upload Data File</h3>
+<style>
+    /* Full-screen background with dark blue overlay */
+    body, html {
+        height: 100%;
+        margin: 0;
+        background-color: #0d1b2a; /* Dark blue behind image */
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .upload-section {
+        position: relative;
+        background: linear-gradient(rgba(13,27,42,0.75), rgba(13,27,42,0.75)),
+                    url("{{ url_for('static', filename='images/ed.jpg') }}") no-repeat center center;
+        background-size: cover;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        color: white;
+        overflow: hidden;
+        animation: zoomBg 20s infinite alternate ease-in-out;
+    }
+
+    .upload-card {
+        background: rgba(13,27,42,0.85);
+        padding: 2.5rem 2rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        width: 100%;
+        max-width: 500px;
+    }
+
+    .upload-card h3 {
+        margin-bottom: 1.5rem;
+        font-weight: 700;
+        font-size: 2rem;
+        text-shadow: 1px 1px 8px rgba(0,0,0,0.6);
+    }
+
+    .btn-upload {
+        padding: 0.8rem 2rem;
+        font-size: 1.1rem;
+        border-radius: 50px;
+        transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+    }
+
+    .btn-upload:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    }
+
+    input[type="file"] {
+        background: rgba(255,255,255,0.1);
+        color: white;
+        border-radius: 8px;
+    }
+
+    .form-text {
+        color: #cfd8dc;
+    }
+
+    @keyframes zoomBg {
+        from { transform: scale(1); }
+        to { transform: scale(1.1); }
+    }
+</style>
+
+<section class="upload-section">
+    <div class="upload-card">
+        <h3>Upload Data File</h3>
+        <form method="POST" enctype="multipart/form-data">
+            <div class="mb-3 text-start">
+                <label for="file" class="form-label">Select file (.csv or .xlsx)</label>
+                <input class="form-control" type="file" id="file" name="file" required>
+                <div class="form-text">Maximum file size: 16MB</div>
             </div>
-            <div class="card-body">
-                <form method="POST" enctype="multipart/form-data">
-                    <div class="mb-3">
-                        <label for="file" class="form-label">Select file (.csv or .xlsx)</label>
-                        <input class="form-control" type="file" id="file" name="file" required>
-                        <div class="form-text">Maximum file size: 16MB</div>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Upload</button>
-                </form>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-upload">Upload</button>
             </div>
-        </div>
+        </form>
     </div>
-</div>
+</section>
 {% endblock %}

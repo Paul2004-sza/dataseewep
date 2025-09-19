@@ -28,7 +28,7 @@ def login():
             return redirect(url_for('auth.login'))
         login_user(user, remember=form.remember_me.data)
         flash('You have successfully logged in', 'success')
-        return redirect(url_for('main.home'))
+        return redirect(url_for('main.home'))  # Go to protected home/dashboard
     return render_template('auth/login.html', title='Sign In', form=form)
 
 @auth_bp.route('/logout')
@@ -36,4 +36,4 @@ def login():
 def logout():
     logout_user()
     flash('You have successfully logged out', 'success')
-    return redirect(url_for('main.home'))
+    return redirect(url_for('main.landing'))  # Back to showcase landing page

@@ -1,103 +1,258 @@
 {% extends "base.html" %}
+
 {% block content %}
-<div class="row">
-    <div class="col-md-12">
-        <div class="card mb-4">
-            <div class="card-header">
-                <h3>Your Data Files</h3>
-            </div>
-            <div class="card-body">
-                {% if data_files %}
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Filename</th>
-                                <th>Uploaded</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for file in data_files %}
-                            <tr>
-                                <td><a href="{{ url_for('data.view_file', file_id=file.id) }}" target="_blank">{{ file.filename }}</a></td>
-                                <td>{{ file.uploaded_at.strftime('%Y-%m-%d %H:%M') }}</td>
-                                <td>
-                                    <div class="btn-group">
-                                        <a href="{{ url_for('data.analyze', file_id=file.id) }}" class="btn btn-sm btn-outline-primary">Analyze</a>
-                                        <a href="{{ url_for('data.predict', file_id=file.id) }}" class="btn btn-sm btn-outline-secondary">Predict</a>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                {% else %}
-                <div class="alert alert-info">
-                    You haven't uploaded any files yet. <a href="{{ url_for('data.upload') }}">Upload your first file</a>.
-                </div>
-                {% endif %}
-            </div>
-        </div>
+<style>
+    body, html {
+        height: 100%;
+        margin: 0;
+        background-color: #0d1b2a;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-        {% if data_files %}
-        <div class="card">
-            <div class="card-header">
-                <h3>Recent Reports</h3>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Type</th>
-                                <th>File</th>
-                                <th>View</th>
-                                <th>Created</th>
-                                <th>Download</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for file in data_files %}
-                                {% for analysis in file.analyses %}
-                                <tr>
-                                    <td>Analysis</td>
-                                    <td>{{ file.filename }}</td>
-                                    <td>
-                                        <a href="{{ url_for('data.view_report', report_type='analysis', report_id=analysis.id) }}" class="btn btn-sm btn-outline-info">View</a>
-                                    </td>
-                                    <td>{{ analysis.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
-                                    <td>
-                                        <a href="{{ url_for('data.download', report_type='analysis', report_id=analysis.id) }}" class="btn btn-sm btn-primary">
-                                            Download
-                                        </a>
-                                    </td>
-                                </tr>
-                                {% endfor %}
+    .data-section {
+        padding: 2rem 1rem;
+        min-height: calc(100vh - 70px); /* keeps space for navbar */
+        background: linear-gradient(rgba(13,27,42,0.85), rgba(13,27,42,0.85)),
+                    url("{{ url_for('static', filename='images/ed.jpg') }}") no-repeat center center;
+        background-size: cover;
+        color: white;
+        overflow: hidden; /* prevent content bleeding */
+    }
 
-                                {% for prediction in file.predictions %}
-                                <tr>
-                                    <td>Prediction ({{ prediction.model_type }})</td>
-                                    <td>{{ file.filename }}</td>
-                                    <td>
-                                        <a href="{{ url_for('data.view_report', report_type='prediction', report_id=prediction.id) }}" class="btn btn-sm btn-outline-info">View</a>
-                                    </td>
-                                    <td>{{ prediction.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
-                                    <td>
-                                        <a href="{{ url_for('data.download', report_type='prediction', report_id=prediction.id) }}" class="btn btn-sm btn-primary">
-                                            Download
-                                        </a>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            {% endfor %}
-                        </tbody>
-                    </table>
+    .card {
+        background: rgba(13,27,42,0.9);
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        color: white;
+        margin-bottom: 2rem;
+    }
+
+    .card-header {
+        font-weight: 600;
+        font-size: 1.2rem;
+        border-bottom: none;
+    }
+
+    .card-header h3 {
+        margin: 0;
+        font-size: 1.1rem;
+    }
+
+    .btn, .btn-sm {
+        border-radius: 50px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn:hover, .btn-sm:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+
+    table {
+        color: white;
+    }
+
+    table thead {
+        background: rgba(255,255,255,0.15);
+    }
+
+    table tbody tr:hover {
+        background: rgba(255,255,255,0.05);
+    }
+
+    .form-control {
+        background: rgba(255,255,255,0.1);
+        color: white;
+        border-radius: 8px;
+        border: none;
+    }
+
+    .form-control::placeholder {
+        color: #cfd8dc;
+    }
+
+    .badge {
+        font-weight: 500;
+        font-size: 0.8rem;
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 768px) {
+        .card-header h3 {
+            font-size: 1rem;
+        }
+        .btn, .btn-sm {
+            font-size: 0.85rem;
+            padding: 0.4rem 0.8rem;
+        }
+        table {
+            font-size: 0.85rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .card-header {
+            font-size: 1rem;
+        }
+        .badge {
+            font-size: 0.75rem;
+        }
+        .btn, .btn-sm {
+            font-size: 0.75rem;
+            padding: 0.35rem 0.7rem;
+        }
+    }
+</style>
+
+<section class="data-section">
+    <div class="container-fluid">
+        <div class="row">
+
+            <!-- Data Files Section -->
+            <div class="col-12">
+                <div class="card border-0">
+                    <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white flex-wrap">
+                        <h3><i class="bi bi-folder2-open"></i> Your Data Files</h3>
+                        <div class="mt-2 mt-md-0">
+                            <button class="btn btn-light btn-sm me-2" data-bs-toggle="collapse" data-bs-target="#dataFilesTable">
+                                <i class="bi bi-arrows-collapse"></i> Toggle
+                            </button>
+                            <a href="{{ url_for('data.upload') }}" class="btn btn-light btn-sm">
+                                <i class="bi bi-cloud-upload"></i> Upload New
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body collapse show" id="dataFilesTable">
+                        {% if data_files %}
+                        <input type="text" id="searchFile" class="form-control mb-3" placeholder="Search by filename...">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light text-dark">
+                                    <tr>
+                                        <th>Filename</th>
+                                        <th>Uploaded</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for file in data_files %}
+                                    <tr>
+                                        <td>
+                                            <a href="{{ url_for('data.view_file', file_id=file.id) }}" target="_blank" class="fw-bold text-decoration-none text-white">
+                                                <i class="bi bi-filetype-csv text-success"></i> {{ file.filename }}
+                                            </a>
+                                        </td>
+                                        <td><span class="badge bg-secondary">{{ file.uploaded_at.strftime('%Y-%m-%d %H:%M') }}</span></td>
+                                        <td>
+                                            <div class="btn-group flex-wrap">
+                                                <a href="{{ url_for('data.analyze', file_id=file.id) }}" class="btn btn-sm btn-outline-info mb-1">
+                                                    <i class="bi bi-bar-chart-line"></i> Analyze
+                                                </a>
+                                                <a href="{{ url_for('data.predict', file_id=file.id) }}" class="btn btn-sm btn-outline-success mb-1">
+                                                    <i class="bi bi-graph-up"></i> Predict
+                                                </a>
+                                                <form action="{{ url_for('data.delete_file', file_id=file.id) }}" method="POST" style="display:inline-block;">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger mb-1" onclick="return confirm('Are you sure you want to delete this file and all reports?');">
+                                                        <i class="bi bi-trash"></i> Delete
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-info text-center">
+                            <i class="bi bi-info-circle"></i> You haven’t uploaded any files yet.
+                            <a href="{{ url_for('data.upload') }}" class="fw-bold">Upload your first file</a>.
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
+
+            <!-- Reports Section -->
+            {% if data_files %}
+            <div class="col-12">
+                <div class="card border-0">
+                    <div class="card-header d-flex justify-content-between align-items-center bg-dark text-white flex-wrap">
+                        <h3><i class="bi bi-journal-text"></i> Recent Reports</h3>
+                        <button class="btn btn-light btn-sm mt-2 mt-md-0" data-bs-toggle="collapse" data-bs-target="#reportsTable">
+                            <i class="bi bi-arrows-collapse"></i> Toggle
+                        </button>
+                    </div>
+                    <div class="card-body collapse show" id="reportsTable">
+                        <input type="text" id="searchReport" class="form-control mb-3" placeholder="Search by file or type...">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light text-dark">
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>File</th>
+                                        <th>View</th>
+                                        <th>Created</th>
+                                        <th>Download / Delete</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for file in data_files %}
+                                        {% for analysis in file.analyses %}
+                                        <tr>
+                                            <td><span class="badge bg-info"><i class="bi bi-activity"></i> Analysis</span></td>
+                                            <td>{{ file.filename }}</td>
+                                            <td>
+                                                <a href="{{ url_for('data.view_report', report_type='analysis', report_id=analysis.id) }}" class="btn btn-sm btn-outline-info mb-1">
+                                                    <i class="bi bi-eye"></i> View
+                                                </a>
+                                            </td>
+                                            <td><span class="badge bg-secondary">{{ analysis.created_at.strftime('%Y-%m-%d %H:%M') }}</span></td>
+                                            <td>
+                                                <a href="{{ url_for('data.download', report_type='analysis', report_id=analysis.id) }}" class="btn btn-sm btn-primary mb-1">
+                                                    <i class="bi bi-download"></i> Download
+                                                </a>
+                                                <form action="{{ url_for('data.delete_report', report_type='analysis', report_id=analysis.id) }}" method="POST" style="display:inline-block;">
+                                                    <button type="submit" class="btn btn-sm btn-danger mb-1" onclick="return confirm('Delete this report?');">
+                                                        <i class="bi bi-trash"></i> Delete
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+
+                                        {% for prediction in file.predictions %}
+                                        <tr>
+                                            <td><span class="badge bg-warning text-dark"><i class="bi bi-lightbulb"></i> Prediction ({{ prediction.model_type }})</span></td>
+                                            <td>{{ file.filename }}</td>
+                                            <td>
+                                                <a href="{{ url_for('data.view_report', report_type='prediction', report_id=prediction.id) }}" class="btn btn-sm btn-outline-info mb-1">
+                                                    <i class="bi bi-eye"></i> View
+                                                </a>
+                                            </td>
+                                            <td><span class="badge bg-secondary">{{ prediction.created_at.strftime('%Y-%m-%d %H:%M') }}</span></td>
+                                            <td>
+                                                <a href="{{ url_for('data.download', report_type='prediction', report_id=prediction.id) }}" class="btn btn-sm btn-success mb-1">
+                                                    <i class="bi bi-download"></i> Download
+                                                </a>
+                                                <form action="{{ url_for('data.delete_report', report_type='prediction', report_id=prediction.id) }}" method="POST" style="display:inline-block;">
+                                                    <button type="submit" class="btn btn-sm btn-danger mb-1" onclick="return confirm('Delete this prediction report?');">
+                                                        <i class="bi bi-trash"></i> Delete
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
         </div>
-        {% endif %}
     </div>
-</div>
+</section>
+
+<script src="{{ url_for('static', filename='js/data.js') }}"></script>
 {% endblock %}

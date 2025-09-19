@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+        /* Full-screen background with dark blue overlay */
+    body, html {
+        height: 100%;
+        margin: 0;
+        background-color: #0d1b2a; /* Dark blue background behind the image */
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .dashboard-section {
+        position: relative;
+        background: linear-gradient(rgba(13,27,42,0.75), rgba(13,27,42,0.75)),
+                    url("{{ url_for('static', filename='images/hj.jpg') }}") no-repeat center center;
+        background-size: cover;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        color: white;
+        overflow: hidden;
+        animation: zoomBg 20s infinite alternate ease-in-out;
+    }
+
+    .dashboard-content h1 {
+        font-size: 3.8rem;
+        font-weight: 700;
+        text-shadow: 2px 2px 12px rgba(0,0,0,0.8);
+        animation: fadeInDown 1s ease-in-out;
+    }
+
+    .dashboard-content p {
+        font-size: 1.5rem;
+        margin: 1.5rem 0 2.5rem 0;
+        text-shadow: 1px 1px 8px rgba(0,0,0,0.6);
+        animation: fadeInUp 1.2s ease-in-out;
+    }
+
+    .btn-dashboard {
+        padding: 1rem 2.2rem;
+        font-size: 1.2rem;
+        border-radius: 50px;
+        margin: 0.5rem;
+        transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+    }
+
+    .btn-dashboard:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    /* Animations */
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-50px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(50px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<section class="dashboard-section">
+    <div class="dashboard-content">
+        <h1>Welcome, {{ current_user.username }}!</h1>
+        <p>This is your personal space to upload, analyze, and predict your data with ease.</p>
+        <a href="{{ url_for('data.dashboard') }}" class="btn btn-primary btn-dashboard">Go to Dashboard</a>
+        <a href="{{ url_for('data.upload') }}" class="btn btn-outline-light btn-dashboard">Upload Data</a>
+    </div>
+</section>
+{% endblock %}

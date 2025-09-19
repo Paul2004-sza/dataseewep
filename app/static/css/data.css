@@ -1,0 +1,35 @@
+.card {
+    border-radius: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f1f8ff;
+}
+
+.table thead th {
+    cursor: pointer;
+    user-select: none;
+}
+
+.badge {
+    font-size: 0.85rem;
+}
+
+.btn i {
+    margin-right: 4px;
+}
+
+.collapse.show {
+    transition: all 0.3s ease-in-out;
+}
+
+#searchFile, #searchReport {
+    border-radius: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    margin-bottom: 0.5rem;
+}

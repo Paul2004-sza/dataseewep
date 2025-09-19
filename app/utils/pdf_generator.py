@@ -88,13 +88,13 @@ class PDFGenerator:
 
             <div class="section">
                 <h2>Summary Statistics</h2>
-                <p><em>Note: Showing only the first 30 columns for performance.</em></p>
+                <p><em>Showing performance.</em></p>
                 <div class="summary-grid">
         """
 
         # Render each column's stats as a card
         for i, (col, stats) in enumerate(summary_stats['describe'].items()):
-            if i >= 30:
+            if i >= 40:
                 html_content += """
                     <div style="width: 100%; text-align:center; font-style:italic; margin-top: 10px;">
                         ... (remaining columns omitted for performance) ...
