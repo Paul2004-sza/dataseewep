@@ -63,6 +63,13 @@ def analyze(file_id):
     analyzer = DataAnalyzer(data_file.filepath)
     summary_stats = analyzer.get_summary_stats()
 
+    # Add debug prints
+    print("Summary stats keys:", summary_stats.keys())
+    print("Columns:", summary_stats.get('columns'))
+    print("Shape:", summary_stats.get('shape'))
+    print("Missing values:", summary_stats.get('missing_values'))
+    print("Dtypes:", summary_stats.get('dtypes'))
+
     if request.method == 'POST':
         selected_columns = request.form.getlist('columns')
         visualizations = analyzer.generate_visualizations(selected_columns)
@@ -100,7 +107,6 @@ def analyze(file_id):
                            file_id=data_file.id,
                            columns=summary_stats['columns'],
                            summary_stats=summary_stats)
-
 
 @data_bp.route('/predict/<int:file_id>', methods=['GET', 'POST'])
 @login_required

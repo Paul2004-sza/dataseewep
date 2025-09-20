@@ -127,5 +127,20 @@
     </div>
 </div>
 
-<script src="{{ url_for('static', filename='js/data.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('analysis-form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            // Validate at least one column is selected
+            const selectedColumns = document.querySelectorAll('input[name="columns"]:checked');
+            if (selectedColumns.length === 0) {
+                e.preventDefault();
+                alert('Please select at least one column to analyze.');
+                return false;
+            }
+        });
+    }
+});
+</script>
 {% endblock %}
